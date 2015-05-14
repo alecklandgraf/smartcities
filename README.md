@@ -1,17 +1,20 @@
 # smartcities
-SmartCities data jam work: http://www.techoregon.org/event/global-smart-cities-hackathon-16529658654
+SmartCities data jam work: Python + Elasticsearch + D3
 
-MIT License
+http://www.techoregon.org/event/global-smart-cities-hackathon-16529658654
 
 #### Quick Start
 
 For the python bits, start a `virtualenv`, clone the repo, then install the python reqs:
 
 ```console
-pip isntall -r requirements.txt
+virtualenv smartcities
+git clone git@github.com:alecklandgraf/smartcities.git
+cd smartcities
+pip install -r requirements.txt
 ```
 
-Get elasticearch from elastic.co and start it up! Now you can load some data.
+Get Elasticearch from http://elastic.co and start it up! Now you can load some data.
 
 #### Getting the data into python and Elasticsearch
 
@@ -34,3 +37,6 @@ resp = s.execute()
 avg_humidity = resp.aggregations.average_humidity['value']  # 51.918338230
 resp.to_dict()  # {u'average_humidity': {u'value': 51.91833823076923}}
 ```
+
+
+MIT License
