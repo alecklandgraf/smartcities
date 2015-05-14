@@ -4,6 +4,7 @@
     from models import AIR_QUALITY_URL
 
     load_first_100_into_elasticsearch(AIR_QUALITY_URL, 'AirQuality')
+
     s_orig = get_search_client('AirQuality')
     s = s_orig.filter('term', epa_station_key=410350004)
     s.count()  # >>> 3
@@ -17,7 +18,6 @@
     resp.to_dict()  # {u'average_humidity': {u'value': 51.91833823076923}}
 
 """
-
 import requests
 # from datetime import datetime
 # from elasticsearch_dsl import DocType, String, Date, Integer
@@ -27,7 +27,9 @@ from elasticsearch.helpers import bulk
 from elasticsearch_dsl import Search
 
 ES_INDEX = 'smartcities'
-AIR_QUALITY_URL = 'http://pdx.datadash.io/api/data/55353d09abadd8b7001497c4?limit=100'
+AIR_QUALITY_URL = (
+    'http://pdx.datadash.io/api/data/55353d09abadd8b7001497c4?limit=10000'
+)
 
 
 def load_first_100_into_elasticsearch(url, doc_type='AirQuality'):
@@ -42,10 +44,9 @@ def get_search_client(doc_type='AirQuality'):
     return Search(es, index=ES_INDEX, doc_type=doc_type)
 
 
-
-
 # mapping look like this: TODO: map dt_pst into DateTime
-# {u'mappings': {u'AirQuality': {u'properties': {u'_created_at': {u'format': u'dateOptionalTime',
+# {u'mappings': {u'AirQuality': {u'properties': {u'_created_at':
+#   {u'format': u'dateOptionalTime',
 #      u'type': u'date'},
 #     u'_updated_at': {u'format': u'dateOptionalTime', u'type': u'date'},
 #     u'barometric_pressure': {u'type': u'double'},
@@ -92,41 +93,3 @@ def get_search_client(doc_type='AirQuality'):
 # u'temperature': 1.1,
 # u'upper_level_temp': u'',
 # u'wind_speed': 13.9}
-
-# === Below is pulled from elasticsearch_dsl README ===
-
-# Define a default Elasticsearch client
-# connections.create_connection(hosts=['localhost'])
-
-
-# class AirQuality(DocType):
-#     title = String(analyzer='snowball', fields={'raw': String(index='not_analyzed')})
-#     body = String(analyzer='snowball')
-#     tags = String(index='not_analyzed')
-#     published_from = Date()
-#     lines = Integer()
-
-#     class Meta:
-#         index = 'smartcities'
-
-#     def save(self, ** kwargs):
-#         self.lines = len(self.body.split())
-#         return super(Article, self).save(** kwargs)
-
-#     def is_published(self):
-#         return datetime.now() < self.published_from
-
-# # create the mappings in elasticsearch
-# Article.init()
-
-# # create and save and article
-# article = Article(id=42, title='Hello world!', tags=['test'])
-# article.body = ''' looong text '''
-# article.published_from = datetime.now()
-# article.save()
-
-# article = Article.get(id=42)
-# print(article.is_published())
-
-# # Display cluster health
-# print(connections.get_connection().cluster.health())
