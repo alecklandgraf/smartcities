@@ -14,7 +14,7 @@ cd smartcities
 pip install -r requirements.txt
 ```
 
-Get Elasticearch from http://elastic.co and start it up! Now you can load some data.
+Get [Elasticearch](https://www.elastic.co/downloads/elasticsearch)  and start it up! Now you can load some data.
 
 #### Getting the data into python and Elasticsearch
 
