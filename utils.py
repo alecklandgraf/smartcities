@@ -1,9 +1,9 @@
 """Example usage:
-    from utils import load_first_100_into_elasticsearch
+    from utils import load_into_elasticsearch
     from utils import get_search_client
     from utils import AIR_QUALITY_URL
 
-    load_first_100_into_elasticsearch(AIR_QUALITY_URL, 'AirQuality')
+    load_into_elasticsearch(AIR_QUALITY_URL, 'AirQuality', limit=100)
 
     s_orig = get_search_client('AirQuality')
     s = s_orig.filter('term', epa_station_key=410350004)
@@ -15,7 +15,7 @@
     s_orig.aggs.metric('average_humidity', 'avg', field='relative_humidity')
     resp = s.execute()
     avg_humidity = resp.aggregations.average_humidity['value']  # 51.918338230
-    resp.to_dict()  # {u'average_humidity': {u'value': 51.91833823076923}}
+    resp.to_dict()  # {'average_humidity': {'value': 51.91833823076923}}
 
 """
 import requests
@@ -32,9 +32,9 @@ AIR_QUALITY_URL = (
 )
 
 
-def load_first_100_into_elasticsearch(url, doc_type='AirQuality'):
-    """Loads first 100 API responses into Elasticsearch"""
-    url += '?limit=100'
+def load_into_elasticsearch(url, doc_type='AirQuality', limit=100):
+    """Loads first `limit` API responses into Elasticsearch"""
+    url += '?limit={}'.format(limit)
     data = requests.get(url).json()
     es = Elasticsearch()
     bulk(es, data, index=ES_INDEX, doc_type=doc_type, timeout=60)
@@ -45,52 +45,60 @@ def get_search_client(doc_type='AirQuality'):
     return Search(es, index=ES_INDEX, doc_type=doc_type)
 
 
+def check_mappings():
+    """returns a dict of the Elasticsearch mapping within index `seedcities`"""
+    es = Elasticsearch()
+    mappings = es.indices.get_mapping().get('smartcities')
+    print mappings
+    return mappings
+
+
 # mapping look like this: TODO: map dt_pst into DateTime
-# {u'mappings': {u'AirQuality': {u'properties': {u'_created_at':
-#   {u'format': u'dateOptionalTime',
-#      u'type': u'date'},
-#     u'_updated_at': {u'format': u'dateOptionalTime', u'type': u'date'},
-#     u'barometric_pressure': {u'type': u'double'},
-#     u'carbon_monoxide': {u'type': u'double'},
-#     u'delta_temperature': {u'type': u'double'},
-#     u'dt_pst': {u'type': u'string'},
-#     u'epa_station_key': {u'type': u'long'},
-#     u'light_scatter': {u'type': u'double'},
-#     u'nitric_oxide': {u'type': u'double'},
-#     u'nitrogen_dioxide': {u'type': u'double'},
-#     u'nitrogen_oxides': {u'type': u'double'},
-#     u'ozone': {u'type': u'double'},
-#     u'relative_humidity': {u'type': u'double'},
-#     u'resultant_direction': {u'type': u'double'},
-#     u'resultant_speed': {u'type': u'double'},
-#     u'sd_hor_wind_dir': {u'type': u'double'},
-#     u'solar_radiation': {u'type': u'long'},
-#     u'sulfur_dioxide': {u'type': u'double'},
-#     u'temperature': {u'type': u'double'},
-#     u'wind_speed': {u'type': u'double'}}}}}
+# {'mappings': {'AirQuality': {'properties': {'_created_at':
+#   {'format': 'dateOptionalTime',
+#      'type': 'date'},
+#     '_updated_at': {'format': 'dateOptionalTime', 'type': 'date'},
+#     'barometric_pressure': {'type': 'double'},
+#     'carbon_monoxide': {'type': 'double'},
+#     'delta_temperature': {'type': 'double'},
+#     'dt_pst': {'type': 'string'},
+#     'epa_station_key': {'type': 'long'},
+#     'light_scatter': {'type': 'double'},
+#     'nitric_oxide': {'type': 'double'},
+#     'nitrogen_dioxide': {'type': 'double'},
+#     'nitrogen_oxides': {'type': 'double'},
+#     'ozone': {'type': 'double'},
+#     'relative_humidity': {'type': 'double'},
+#     'resultant_direction': {'type': 'double'},
+#     'resultant_speed': {'type': 'double'},
+#     'sd_hor_wind_dir': {'type': 'double'},
+#     'solar_radiation': {'type': 'long'},
+#     'sulfur_dioxide': {'type': 'double'},
+#     'temperature': {'type': 'double'},
+#     'wind_speed': {'type': 'double'}}}}}
 #
 # a doc
-# {u'_created_at': u'2015-04-20T17:53:13.181Z',
-# u'_id': u'84',
-# u'_updated_at': u'2015-04-20T17:53:13.181Z',
-# u'barometric_pressure': 25.93,
-# u'carbon_monoxide': u'',
-# u'delta_temperature': 0.07,
-# u'dt_pst': u'2015-02-22 00:10:00-08',
-# u'epa_station_key': 410350004,
-# u'light_scatter': 0.28,
-# u'lower_level_temperature': u'',
-# u'middle_level_temperature': u'',
-# u'nitric_oxide': u'',
-# u'nitrogen_dioxide': u'',
-# u'nitrogen_oxides': u'',
-# u'ozone': u'',
-# u'relative_humidity': 55,
-# u'resultant_direction': 34,
-# u'resultant_speed': 12.8,
-# u'sd_hor_wind_dir': 22.5,
-# u'solar_radiation': u'',
-# u'sulfur_dioxide': u'',
-# u'temperature': 1.1,
-# u'upper_level_temp': u'',
-# u'wind_speed': 13.9}
+# {'_created_at': '2015-04-20T17:53:13.181Z',
+# '_id': '84',
+# '_updated_at': '2015-04-20T17:53:13.181Z',
+# 'barometric_pressure': 25.93,
+# 'carbon_monoxide': '',
+# 'delta_temperature': 0.07,
+# 'dt_pst': '2015-02-22 00:10:00-08',
+# 'epa_station_key': 410350004,
+# 'light_scatter': 0.28,
+# 'lower_level_temperature': '',
+# 'middle_level_temperature': '',
+# 'nitric_oxide': '',
+# 'nitrogen_dioxide': '',
+# 'nitrogen_oxides': '',
+# 'ozone': '',
+# 'relative_humidity': 55,
+# 'resultant_direction': 34,
+# 'resultant_speed': 12.8,
+# 'sd_hor_wind_dir': 22.5,
+# 'solar_radiation': '',
+# 'sulfur_dioxide': '',
+# 'temperature': 1.1,
+# 'upper_level_temp': '',
+# 'wind_speed': 13.9}

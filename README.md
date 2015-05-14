@@ -23,11 +23,11 @@ Get [Elasticearch](https://www.elastic.co/downloads/elasticsearch)  and start it
 #### Getting the data into python and Elasticsearch
 
 ```py
-from utils import load_first_100_into_elasticsearch
+from utils import load_into_elasticsearch
 from utils import get_search_client
 from utils import AIR_QUALITY_URL
 
-load_first_100_into_elasticsearch(AIR_QUALITY_URL, 'AirQuality')
+load_into_elasticsearch(AIR_QUALITY_URL, 'AirQuality')
 
 s_orig = get_search_client('AirQuality')
 s = s_orig.filter('term', epa_station_key=410350004)
