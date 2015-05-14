@@ -53,6 +53,68 @@ def check_mappings():
     return mappings
 
 
+def drop_index():
+    es = Elasticsearch()
+    es.indices.delete(index=ES_INDEX)
+
+
+def create_index():
+    es = Elasticsearch()
+    es.indices.create(index=ES_INDEX, ignore=400)
+
+
+def reset_elasticsearch():
+    drop_index()
+    create_index()
+
+
+def create_mappings(mapping_dict=None, doc_type='AirQuality'):
+    es = Elasticsearch()
+    mapping_dict = mapping_dict or get_default_mapping(doc_type)
+    es.indices.put_mapping(
+        index=ES_INDEX,
+        doc_type=doc_type,
+        body=mapping_dict
+    )
+
+
+def get_default_mapping(doc_type='AirQuality'):
+    return {
+        'AirQuality': {
+            'properties': {
+                '_created_at': {'format': 'dateOptionalTime', 'type': 'date'},
+                '_updated_at': {'format': 'dateOptionalTime', 'type': 'date'},
+                'barometric_pressure': {'type': 'double'},
+                'carbon_monoxide': {'type': 'double'},
+                'delta_temperature': {'type': 'double'},
+                'dt_pst': {  # '2015-02-22 00:10:00-08'
+                    'type': 'date',
+                    'format': (
+                        'yyyy-MM-dd HH:mm:ssZ||'
+                        'date_optional_time'
+                    ),
+                    'ignore_malformed': True,  # force invalid values to null
+                    'doc_values': True,
+                },
+                'epa_station_key': {'type': 'long'},
+                'light_scatter': {'type': 'double'},
+                'nitric_oxide': {'type': 'double'},
+                'nitrogen_dioxide': {'type': 'double'},
+                'nitrogen_oxides': {'type': 'double'},
+                'ozone': {'type': 'double'},
+                'relative_humidity': {'type': 'double'},
+                'resultant_direction': {'type': 'double'},
+                'resultant_speed': {'type': 'double'},
+                'sd_hor_wind_dir': {'type': 'double'},
+                'solar_radiation': {'type': 'long'},
+                'sulfur_dioxide': {'type': 'double'},
+                'temperature': {'type': 'double'},
+                'wind_speed': {'type': 'double'}
+            }
+        }
+    }
+
+
 # mapping look like this: TODO: map dt_pst into DateTime
 # {'mappings': {'AirQuality': {'properties': {'_created_at':
 #   {'format': 'dateOptionalTime',
