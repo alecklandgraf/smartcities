@@ -28,12 +28,13 @@ from elasticsearch_dsl import Search
 
 ES_INDEX = 'smartcities'
 AIR_QUALITY_URL = (
-    'http://pdx.datadash.io/api/data/55353d09abadd8b7001497c4?limit=10000'
+    'http://pdx.datadash.io/api/data/55353d09abadd8b7001497c4'
 )
 
 
 def load_first_100_into_elasticsearch(url, doc_type='AirQuality'):
     """Loads first 100 API responses into Elasticsearch"""
+    url += '?limit=100'
     data = requests.get(url).json()
     es = Elasticsearch()
     bulk(es, data, index=ES_INDEX, doc_type=doc_type, timeout=60)
