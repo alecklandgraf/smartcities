@@ -1,8 +1,19 @@
 # smartcities
 SmartCities data jam work: http://www.techoregon.org/event/global-smart-cities-hackathon-16529658654
 
-
 MIT License
+
+#### Quick Start
+
+For the python bits, start a `virtualenv`, clone the repo, then install the python reqs:
+
+```console
+pip isntall -r requirements.txt
+```
+
+Get elasticearch from elastic.co and start it up! Now you can load some data.
+
+#### Getting the data into python and Elasticsearch
 
 ```py
 from utils import load_first_100_into_elasticsearch
