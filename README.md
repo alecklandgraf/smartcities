@@ -5,9 +5,9 @@ SmartCities data jam work: http://www.techoregon.org/event/global-smart-cities-h
 MIT License
 
 ```py
-from models import load_first_100_into_elasticsearch
-from models import get_search_client
-from models import AIR_QUALITY_URL
+from utils import load_first_100_into_elasticsearch
+from utils import get_search_client
+from utils import AIR_QUALITY_URL
 
 load_first_100_into_elasticsearch(AIR_QUALITY_URL, 'AirQuality')
 
