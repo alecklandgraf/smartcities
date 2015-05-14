@@ -30,6 +30,7 @@ ES_INDEX = 'smartcities'
 AIR_QUALITY_URL = (
     'http://pdx.datadash.io/api/data/55353d09abadd8b7001497c4'
 )
+EPA_STATION_URL = 'http://pdx.datadash.io/api/data/552d2910d838c1a200fa6927'
 
 
 def load_into_elasticsearch(url, doc_type='AirQuality', limit=100):
