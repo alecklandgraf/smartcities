@@ -16,6 +16,10 @@ pip install -r requirements.txt
 
 Get [Elasticearch](https://www.elastic.co/downloads/elasticsearch)  and start it up! Now you can load some data.
 
+*note* you can verify Elasticsearch is running locally with the following command: `curl -XGET localhost:9200`
+
+**warning** Elasticsearch will try to join any other Elasticsearch cluster with the same `cluser.name` that is discoverable on your netowrk! You can avoid this by adding a uniquie `cluster.name` or setting `node.local: true` in the elasticsearch config file: `elasticsearch-X.Y.Z/config/elasticsearch.yml`
+
 #### Getting the data into python and Elasticsearch
 
 ```py
